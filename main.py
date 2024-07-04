@@ -1,4 +1,4 @@
-from flask import Flask,jsonify
+from flask import Flask,jsonify,request
 import cv2
 import mediapipe as mp
 import numpy as np
@@ -6,8 +6,14 @@ import numpy as np
 # current module (__name__) as argument.
 app = Flask(__name__)
 
-@app.route('/api/squat', methods=['GET'])
+@app.route('/api/squat', methods=['POST'])
 def squatCount():
+
+    video_url = request.json.get('video_path') 
+    
+    if not video_url:
+        return jsonify({"error": "No video URL provided"}), 400
+
     # Initialize MediaPipe Pose
     mp_pose = mp.solutions.pose
     mp_drawing = mp.solutions.drawing_utils
@@ -17,7 +23,7 @@ def squatCount():
     squat_stage = None
 
     # Open the saved video file
-    cap = cv2.VideoCapture('input.mp4')
+    cap = cv2.VideoCapture(video_url)
 
     # Get the default frame width and height
     frame_width = int(cap.get(3))

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,jsonify
 import cv2
 import mediapipe as mp
 import numpy as np
@@ -6,12 +6,8 @@ import numpy as np
 # current module (__name__) as argument.
 app = Flask(__name__)
 
-# The route() function of the Flask class is a decorator, 
-# which tells the application which URL should call 
-# the associated function.
-@app.route('/')
-# ‘/’ URL is bound with hello_world() function.
-def hello_world():
+@app.route('/api/squat', methods=['GET'])
+def squatCount():
     # Initialize MediaPipe Pose
     mp_pose = mp.solutions.pose
     mp_drawing = mp.solutions.drawing_utils
@@ -91,7 +87,10 @@ def hello_world():
     cv2.destroyAllWindows()
 
     print("Post-processing complete. Output saved as 'output.mp4'.")
-    return 'Hello World'
+    data = {
+        "squat count": squat_counter,
+    }
+    return jsonify(data)
 
 
 # Function to calculate the angle between three points
@@ -111,6 +110,4 @@ def calculate_angle(a, b, c):
 # main driver function
 if __name__ == '__main__':
 
-    # run() method of Flask class runs the application 
-    # on the local development server.
     app.run()
